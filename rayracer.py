@@ -43,13 +43,13 @@ class Ray:
         else:
             hit = self.get_closest_intersection(world)
             if hit.has_shape():
-                reflectedRay = hit.shape.scatter(hit.position, self.direction, world)
+                reflected_ray = hit.shape.scatter(hit.position, self.direction, world)
 
-                shapeMaterial = hit.shape.material
-                attenuation = shapeMaterial.attenuation
+                shape_material = hit.shape.material
+                attenuation = shape_material.attenuation
 
                 colour = hit.shape.material.colour.mul(attenuation)
-                reflection_colour = reflectedRay.trace_scene(depth + 1, max_depth, world)
+                reflection_colour = reflected_ray.trace_scene(depth + 1, max_depth, world)
 
                 return colour.add(reflection_colour.mul(1 - attenuation))
 
@@ -216,17 +216,17 @@ def draw(sample_num):
     for x in range(WIDTH):
         for y in range(HEIGHT):
             ray = generate_ray(x, y, world)
-            rayColour = ray.trace(NUMBER_OF_REFLECTIONS, world)
+            ray_colour = ray.trace(NUMBER_OF_REFLECTIONS, world)
 
             if sample_num == 0:
-                kandinsky.set_pixel(x, y, rayColour.to_colour())
+                kandinsky.set_pixel(x, y, ray_colour.to_colour())
 
             else:
                 pixel_colour = kandinsky.get_pixel(x, y)
                 r, g, b = pixel_colour
                 pixel_colour_vector = Vector(r, g, b)
                 pixel_colour_vector = pixel_colour_vector.mul(sample_num)
-                pixel_colour = (pixel_colour_vector.add(rayColour)).mul(1/(sample_num + 1))
+                pixel_colour = (pixel_colour_vector.add(ray_colour)).mul(1/(sample_num + 1))
 
                 kandinsky.set_pixel(x, y, pixel_colour.to_colour())
 
